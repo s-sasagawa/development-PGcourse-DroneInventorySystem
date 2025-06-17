@@ -19,14 +19,17 @@ public interface CenterInfoRepository extends JpaRepository<CenterInfo, Integer>
 	 * 引数に合致する在庫センター情報を取得
 	 * 
 	 * @param centerName
+	 * @param managerName
 	 * @param region
 	 * @return paramで検索した結果
 	 */
 	@Query("SELECT s FROM CenterInfo s WHERE " +
 			"(:centerName = '' OR s.centerName LIKE %:centerName%) AND " +
+			"(:managerName = '' OR s.managerName LIKE %:managerName%) AND " +
 			"(:region = '' OR s.address LIKE %:region%) AND " +
 			"(s.operationalStatus = 0)")
 	List<CenterInfo> findActiveCenters(
 			String centerName,
+			String managerName,
 			String region);
 }
