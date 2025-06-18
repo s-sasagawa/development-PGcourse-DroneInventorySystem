@@ -25,17 +25,17 @@ public class CenterInfoFormValidatorImpl implements ConstraintValidator<CenterIn
     @Override
     public boolean isValid(CenterInfoForm form, ConstraintValidatorContext context) {
     	boolean isValid = true;
+        context.disableDefaultConstraintViolation();
         // フィールドがすべて空である場合にエラー処理
         if (isAllFieldsEmpty(form)) {
-            context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.ALL_FIELDS_EMPTY_ERROR_MESSAGE))
                    .addConstraintViolation();
             isValid = false;
+            return isValid;
         }
         
         // センター名が不正文字に含まれる場合にエラー処理
         if (isValidCenterName(form.getCenterName())) {
-            context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.CENTER_NAME_FORBIDDEN))
                    .addConstraintViolation();
             isValid = false;
@@ -43,7 +43,6 @@ public class CenterInfoFormValidatorImpl implements ConstraintValidator<CenterIn
         
         // 管理者名が不正文字に含まれる場合にエラー処理
         if (isValidManagerName(form.getManagerName())) {
-            context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.MANAGER_NAME_FORBIDDEN))
                    .addConstraintViolation();
             isValid = false;
@@ -52,7 +51,6 @@ public class CenterInfoFormValidatorImpl implements ConstraintValidator<CenterIn
         // 都道府県のバリデーション
         if (!isValidRegion(form.getRegion())) {
             // 都道府県が無効な場合、エラーメッセージをスロー
-            context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(ErrorMessageHelper.getMessage(ErrorMessage.REGION_NAME_FORBIDDEN))
                    .addConstraintViolation();
             isValid = false;
