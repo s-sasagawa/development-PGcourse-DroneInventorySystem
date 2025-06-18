@@ -24,6 +24,9 @@
 					<label for="searchTerm" class="mr-2">センター名</label>
  					<input type="text" id="searchTerm" name="centerName" class="form-control mr-2">
  					
+ 					<label for="searchTerm" class="mr-2">管理者名</label>
+ 					<input type="text" id="searchTerm" name="managerName" class="form-control mr-2">
+ 				
  					<label for="searchTerm" class="mr-2">都道府県</label>
  					<select id="searchTerm" name="region" class="form-control mr-2">
 						 <option value="">選択してください</option>
@@ -37,10 +40,9 @@
  				
  				<!-- エラーメッセージの表示 -->
  				<div th:if="${errorMsg}" class="text-danger">
-					 <p th:text="${errorMsg}"></p>
+					 <p style = "white-space: pre-wrap;" th:text="${errorMsg}"></p>
 				</div>
 			</div>
- 			
 			<!-- 在庫センター情報テーブル -->
 			<div class="table-responsive">
 				<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">

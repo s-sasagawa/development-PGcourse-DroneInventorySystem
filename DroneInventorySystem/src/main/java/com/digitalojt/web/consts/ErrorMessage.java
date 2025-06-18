@@ -37,4 +37,21 @@ public class ErrorMessage {
 	
 	// 操作履歴画面の操作時刻に関するエラーメッセージ
 	public static final String OPERATION_DATE_FIELD_ERROR_MESSAGE = "operationLog.operationDateField.empty";
+	
+	/**在庫センター画面専用エラーメッセージ*/
+	// 在庫センター名に禁止文字チェック（{ } ; = $ & ）が含まれている場合のエラーメッセージキー
+	public static final String CENTER_NAME_FORBIDDEN = "center.name.forbidden";
+	
+	// 在庫センター名の文字数が制限を超えた場合のエラーメッセージキー
+	public static final String CENTER_NAME_INVALID_LENGTH = "center.name.length.wrongInput";
+	
+	// 管理者名に禁止文字チェック（{ } ; = $ & ）が含まれている場合のエラーメッセージキー
+	public static final String MANAGER_NAME_FORBIDDEN = "manager.name.forbidden";
+	
+	// 管理者名の文字数が制限を超えた場合のエラーメッセージキー
+	public static final String MANAGER_NAME_INVALID_LENGTH = "manager.name.length.wrongInput";
+	
+    // 都道府県に禁止文字チェック（{ } ; = $ & ）が含まれている場合のエラーメッセージキー
+	public static final String REGION_NAME_FORBIDDEN = "region.name.forbidden";
+	
 }

@@ -1,11 +1,17 @@
 package com.digitalojt.web.controller;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -82,7 +88,7 @@ public class CenterInfoController extends AbstractController {
 		}
 
 		// 検索条件に基づいて在庫センター情報を取得
-		List<CenterInfo> centerInfoList = centerInfoService.getCenterInfoData(form.getCenterName(), form.getRegion());
+		List<CenterInfo> centerInfoList = centerInfoService.getCenterInfoData(form.getCenterName(),form.getManagerName(), form.getRegion());
 
 		// 画面表示用に商品情報リストをセット
 		model.addAttribute(ModelAttributeContents.CENTER_INFO_LIST, centerInfoList);
@@ -101,17 +107,86 @@ public class CenterInfoController extends AbstractController {
 	 */
 	private void handleValidationError(Model model, BindingResult bindingResult, CenterInfoForm form) {
 		// エラーメッセージをリストに格納
-		StringBuilder errorMsg = new StringBuilder();
+		List<String> objectErrorNames = List.of("form");
+		List<ObjectError> sortedErrors = getSortErrors(bindingResult,CenterInfoForm.class,objectErrorNames);
+		
 
-		// フィールドごとのエラーメッセージを取得し、リストに追加
-		bindingResult.getGlobalErrors().forEach(error -> {
-			String message = error.getDefaultMessage();
-			errorMsg.append(message).append("\r\n"); // メッセージを改行で区切って追加
-		});
+		StringBuilder errorMsg = new StringBuilder();
+		String message = sortedErrors.stream()
+			.map(error -> {
+				if (error instanceof FieldError fieldError ) {
+					return fieldError.getDefaultMessage();
+				} else {
+				return error.getDefaultMessage();
+				}
+            })
+			.collect(Collectors.joining("\r\n"));
+		errorMsg.append(message);
 
 		// エラーメッセージをモデルに追加
 		model.addAttribute(LogMessage.FLASH_ATTRIBUTE_ERROR, errorMsg.toString());
 
 		logValidationError(LogMessage.HTTP_POST, form + " " + errorMsg.toString());
 	}
+	
+	
+	/**
+	 * エラーメッセージソート処理
+	 * 
+	 * @param bindingResult
+	 * @param formClass
+	 * @param objectErrorNames
+	 */
+	private static List<ObjectError> getSortErrors(BindingResult bidingresult, Class<?> formClass, List<String> objectErrorNames) {
+		
+		List<String> errorOrder = getErrorOrder(formClass,objectErrorNames);
+		
+		return bidingresult.getAllErrors().stream()
+				//センター名,管理者名,都道府県名になるようにソート
+				//オブジェクトエラー・フィールドエラー関係なく、項目順に並び替える
+				.sorted(Comparator.comparingInt(error -> {
+					String Key;
+					if (error instanceof FieldError fieldError) {
+						Key = error.getDefaultMessage();
+						//Key = fieldError.getField();
+						if (Key.contains("センター名")) {
+							return 0;
+						} else if (Key.contains("管理者名")){ 
+							return 1;
+						} 
+						
+					} else {
+						Key = error.getDefaultMessage();
+						//Key = error.getObjectName();
+						if (Key.contains("センター名")) {
+							return 0;
+						} else if (Key.contains("管理者名")){ 
+							return 1;
+						}
+					}
+					int index = errorOrder.indexOf(Key);
+					return index >= 0 ? index : Integer.MAX_VALUE;
+				}))
+				.collect(Collectors.toList());
+	}
+		
+	
+	/**
+	 * エラーリスト定義
+	 * 
+	 * @param clazz
+	 * @param objectErrorNames
+	 */
+	private static  List<String> getErrorOrder(Class<?> clazz, List<String> objectErrorNames) {
+		List<String> fieldNames = Arrays.stream(clazz.getDeclaredFields())
+		.map(Field::getName)
+		.collect(Collectors.toList());
+	
+		List<String>  allErrorNames = new ArrayList<>(fieldNames);
+		allErrorNames.addAll(objectErrorNames);
+		return allErrorNames;
+	}
 }
+	
+
+	

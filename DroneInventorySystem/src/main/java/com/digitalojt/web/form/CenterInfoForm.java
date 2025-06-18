@@ -18,8 +18,12 @@ import lombok.Data;
 public class CenterInfoForm {
 
 	/**センター名*/
-    @Size(max = ModelAttributeContents.MAX_CENTER_NAME_LENGTH, message = "{centerName.length.wrongInput}")
+    @Size(max = ModelAttributeContents.MAX_CENTER_NAME_LENGTH, message = "{center.name.length.exceedLimit}")
 	private String centerName;
+    
+	/**管理者名*/
+    @Size(max = ModelAttributeContents.MAX_MANAGER_NAME_LENGTH, message = "{manager.name.length.exceedLimit}")
+	private String managerName;
 
 	/**都道府県*/
 	private String region;
